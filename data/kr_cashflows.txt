@@ -1,0 +1,57 @@
+Operating Cash Flow
+Capital Expenditure
+Purchase Of Business
+Net Income From Continuing Operations
+End Cash Position
+Long Term Debt Issuance
+Dividend Received Cfo
+Purchase Of Investment Properties
+Sale Of Intangibles
+Deferred Tax
+Interest Paid Cfo
+Repayment Of Debt
+Net Long Term Debt Issuance
+Other Cash Adjustment Outside Changein Cash
+Gain Loss On Sale Of PPE
+Investing Cash Flow
+Depreciation And Amortization
+Taxes Refund Paid
+Change In Other Current Liabilities
+Provisionand Write Offof Assets
+Short Term Debt Issuance
+Net Investment Purchase And Sale
+Sale Of Investment
+Cash Dividends Paid
+Effect Of Exchange Rate Changes
+Net Short Term Debt Issuance
+Net Investment Properties Purchase And Sale
+Net Business Purchase And Sale
+Sale Of PPE
+Short Term Debt Payments
+Net Other Investing Changes
+Issuance Of Debt
+Purchase Of Investment
+Pension And Employee Benefit Expense
+Depreciation
+Long Term Debt Payments
+Net Intangibles Purchase And Sale
+Change In Inventory
+Sale Of Business
+Change In Receivables
+Gain Loss On Investment Securities
+Change In Payable
+Financing Cash Flow
+Amortization Cash Flow
+Net Issuance Payments Of Debt
+Other Non Cash Items
+Net Foreign Currency Exchange Gain Loss
+Beginning Cash Position
+Changes In Cash
+Interest Received Cfo
+Purchase Of PPE
+Purchase Of Intangibles
+Net PPE Purchase And Sale
+Change In Working Capital
+Free Cash Flow
+Net Other Financing Charges
+Change In Other Current Assets

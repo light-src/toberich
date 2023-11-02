@@ -1,0 +1,119 @@
+Change In Tax Payable
+Cash Flow From Continuing Investing Activities
+Unrealized Gain Loss On Investment Securities
+Change In Prepaid Assets
+Preferred Stock Dividend Paid
+Sale Of PPE
+Long Term Debt Payments
+Receiptsfrom Customers
+Repurchase Of Capital Stock
+Paymentson Behalfof Employees
+Gain Loss On Investment Securities
+Net Long Term Debt Issuance
+Financing Cash Flow
+Operating Gains Losses
+Cash Flowsfromusedin Operating Activities Direct
+Change In Income Tax Payable
+Change In Other Working Capital
+Interest Paid Cff
+Sale Of Investment
+Earnings Losses From Equity Investments
+Gain Loss On Sale Of Business
+Net Intangibles Purchase And Sale
+Pension And Employee Benefit Expense
+Dividend Received Cfo
+Interest Paid Supplemental Data
+Change In Dividend Payable
+Interest Received Cfi
+Common Stock Dividend Paid
+Cash From Discontinued Investing Activities
+Change In Accrued Expense
+Classesof Cash Receiptsfrom Operating Activities
+Cash From Discontinued Financing Activities
+Cash Flow From Continuing Financing Activities
+Net Other Financing Charges
+Interest Paid Direct
+Amortization Of Intangibles
+Preferred Stock Issuance
+Cash Flow From Discontinued Operation
+End Cash Position
+Net Business Purchase And Sale
+Income Tax Paid Supplemental Data
+Purchase Of PPE
+Free Cash Flow
+Change In Working Capital
+Other Cash Paymentsfrom Operating Activities
+Operating Cash Flow
+Preferred Stock Payments
+Net Preferred Stock Issuance
+Depletion
+Depreciation
+Common Stock Payments
+Short Term Debt Payments
+Asset Impairment Charge
+Paymentsto Suppliersfor Goodsand Services
+Net PPE Purchase And Sale
+Net Short Term Debt Issuance
+Deferred Tax
+Deferred Income Tax
+Purchase Of Business
+Changes In Account Receivables
+Repayment Of Debt
+Net Other Investing Changes
+Change In Payable
+Change In Interest Payable
+Taxes Refund Paid Direct
+Investing Cash Flow
+Excess Tax Benefit From Stock Based Compensation
+Net Investment Properties Purchase And Sale
+Net Income From Continuing Operations
+Classesof Cash Payments
+Change In Payables And Accrued Expense
+Change In Account Payable
+Dividend Paid Cfo
+Issuance Of Capital Stock
+Issuance Of Debt
+Dividends Received Direct
+Taxes Refund Paid
+Sale Of Business
+Interest Received Direct
+Short Term Debt Issuance
+Net Foreign Currency Exchange Gain Loss
+Stock Based Compensation
+Net Common Stock Issuance
+Amortization Of Securities
+Interest Paid Cfo
+Change In Receivables
+Proceeds From Stock Option Exercised
+Net Issuance Payments Of Debt
+Cash Flow From Continuing Operating Activities
+Purchase Of Intangibles
+Other Cash Receiptsfrom Operating Activities
+Common Stock Issuance
+Cash From Discontinued Operating Activities
+Cash Dividends Paid
+Sale Of Intangibles
+Other Non Cash Items
+Capital Expenditure
+Net Investment Purchase And Sale
+Purchase Of Investment Properties
+Capital Expenditure Reported
+Purchase Of Investment
+Changes In Cash
+Dividends Received Cfi
+Amortization Cash Flow
+Other Cash Adjustment Inside Changein Cash
+Beginning Cash Position
+Change In Inventory
+Other Cash Adjustment Outside Changein Cash
+Provisionand Write Offof Assets
+Sale Of Investment Properties
+Effect Of Exchange Rate Changes
+Depreciation And Amortization
+Interest Received Cfo
+Change In Other Current Assets
+Gain Loss On Sale Of PPE
+Depreciation Amortization Depletion
+Long Term Debt Issuance
+Change In Other Current Liabilities
+Dividends Paid Direct
