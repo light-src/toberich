@@ -190,6 +190,6 @@ if __name__ == '__main__':
 
         print(i)
 
-        with open("data/kr_cashflows.txt", "w") as file:
+        with open("kr_cashflows.txt", "w") as file:
             for item in index_set:
                 file.write(item + "\n")
