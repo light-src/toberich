@@ -15,7 +15,10 @@ def info():
 
     ticker = yticker.YTicker(request_ticker)
 
-    return jsonify(ticker.info())
+    try:
+        return jsonify(ticker.info())
+    except Exception as e:
+        return e, 500
 
 
 @app.get('/financial_info')
@@ -31,7 +34,10 @@ def financial_info():
 
     ticker = yticker.YTicker(request_ticker)
 
-    return jsonify(ticker.financial_info(int(request_year)))
+    try:
+        return jsonify(ticker.financial_info(int(request_year)))
+    except Exception as e:
+        return e, 500
 
 
 if __name__ == '__main__':
