@@ -4,6 +4,8 @@ import calculator
 import terms
 import math
 
+import ticker
+
 
 def average(values):
     value_list = [0 if value is None else value for value in values]
@@ -33,11 +35,11 @@ def sum_of_keys(fn, keys, year):
     return return_value
 
 
-class YTicker:
-    def __init__(self, ticker):
-        self.ticker = ticker
+class YTicker(ticker.Ticker):
+    def __init__(self, tt):
+        self.ticker = tt
         self._시가총액 = None
-        self._government_bond_yields = None
+        self._국채수익률 = None
         self._use_non_growth_threshold = False
         self._non_growth_threshold = None
         self._this_year = None
@@ -46,19 +48,19 @@ class YTicker:
         self._non_growth_dividend_yield = None
         self._dividend_yield = None
         self._default_years = None
-        self.element = yf.Ticker(ticker)
+        self.element = yf.Ticker(tt)
 
     def set_use_non_growth_threshold(self, use):
         self._use_non_growth_threshold = use
 
-    def set_government_bond_yields(self, year):
-        self._government_bond_yields = year
+    def set_국채수익률(self, 국채수익률):
+        self._국채수익률 = 국채수익률
 
     @property
-    def government_bond_yields(self):
-        if self._government_bond_yields is None:
+    def 국채수익률(self):
+        if self._국채수익률 is None:
             return 0.04285
-        return self._government_bond_yields
+        return self._국채수익률
 
     def set_non_growth_threshold(self, year):
         self._non_growth_threshold = year
@@ -288,7 +290,7 @@ class YTicker:
         return self.element.fast_info[terms.MarketCap]
 
     def 리스크프리미엄(self):
-        return self.예상할인율() - self.government_bond_yields
+        return self.예상할인율() - self.국채수익률
 
     def __str__(self):
         return "Ticker : " + self.ticker + "\n" \
