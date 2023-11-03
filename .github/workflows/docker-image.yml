@@ -2,8 +2,6 @@ name: Github Actions
 
 on:
   push:
-    branches:
-      - '**'
     tags:
       - '**'
 
@@ -53,5 +51,5 @@ jobs:
           passphrase: ${{ secrets.REMOTE_SSH_PASSPHRASE }}
           port: ${{ secrets.REMOTE_SSH_PORT }}
           script: |
-            export IMAGE_TAG=$(echo ${{ steps.docker_meta.outputs.tags }} | cut -d':' -f2)
+            export IMAGE_TAG=$(echo ${{ steps.docker_meta.outputs.tags[0] }} | cut -d':' -f2)
             docker-compose up --detach --force-recreate
