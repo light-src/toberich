@@ -5,6 +5,9 @@ class Ticker(ABC):
     ticker = ""
 
     @abstractmethod
+    def 원본데이터(self, year):
+        pass
+    @abstractmethod
     def 매출액(self, year):
         pass
 
@@ -69,6 +72,10 @@ class Ticker(ABC):
         pass
 
     @abstractmethod
+    def 평균주주환원율(self):
+        pass
+
+    @abstractmethod
     def 주주환원율(self, year):
         pass
 
@@ -94,11 +101,13 @@ class Ticker(ABC):
             "시가총액": self.시가총액(),
             "평균 매출액 증가율": self.평균매출액증가율(),
             "예상할인율": self.예상할인율(),
+            "평균주주환원율": -1 * self.평균주주환원율(),
             "리스크 프리미엄": self.리스크프리미엄(),
         }
 
     def financial_info(self, year):
         return {
+            "원본데이터": self.원본데이터(year),
             "매출액": self.매출액(year),
             "매출원가": self.매출원가(year),
             "매출총이익": self.매출총이익(year),
