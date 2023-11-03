@@ -43,7 +43,8 @@ jobs:
           tags: ${{ steps.docker_meta.outputs.tags }}
           labels: ${{ steps.docker_meta.outputs.labels }}
 
-      - name: execute remote ssh
+      - 
+        name: execute remote ssh
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.REMOTE_SSH_HOST }}
@@ -52,5 +53,5 @@ jobs:
           passphrase: ${{ secrets.REMOTE_SSH_PASSPHRASE }}
           port: ${{ secrets.REMOTE_SSH_PORT }}
           script: |
-            export IMAGE_TAG=${{ steps.docker_meta.outputs.tags }}
+            export IMAGE_TAG=$(echo ${{ steps.docker_meta.outputs.tags }} | cut -d':' -f2)
             docker-compose up --detach --force-recreate
