@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
-import calculator
 
 
 class Ticker(ABC):
+    ticker = ""
 
     @abstractmethod
     def 매출액(self, year):
@@ -60,8 +60,9 @@ class Ticker(ABC):
     def 평균유효세율(self):
         pass
 
-    def 당기순이익(self, year) -> float:
-        return self.법인세비용차감전순이익(year) - self.법인세비용(year)
+    @abstractmethod
+    def 당기순이익(self, year):
+        pass
 
     @abstractmethod
     def 주주환원(self, year):
@@ -71,9 +72,9 @@ class Ticker(ABC):
     def 주주환원율(self, year):
         pass
 
-    def 예상할인율(self) -> float:
-        cashflow = [-1 * self.시가총액()] + [-1 * self.주주환원(y) for y in range(2020, 2060)]
-        return calculator.irr(cashflow)
+    @abstractmethod
+    def 예상할인율(self):
+        pass
 
     @abstractmethod
     def 시가총액(self):
@@ -81,8 +82,34 @@ class Ticker(ABC):
 
     @abstractmethod
     def 리스크프리미엄(self):
-        return self.예상할인율() - self.국채수익률()
+        return self.예상할인율() - self.국채수익률
 
-    @abstractmethod
+    @property
     def 국채수익률(self):
         pass
+
+    def info(self):
+        return {
+            "Ticker": self.ticker,
+            "시가총액": self.시가총액(),
+            "평균 매출액 증가율": self.평균매출액증가율(),
+            "예상할인율": self.예상할인율(),
+            "리스크 프리미엄": self.리스크프리미엄(),
+        }
+
+    def financial_info(self, year):
+        return {
+            "매출액": self.매출액(year),
+            "매출원가": self.매출원가(year),
+            "매출총이익": self.매출총이익(year),
+            "판관비": self.판매비와관리비(year),
+            "영업이익": self.영업이익(year),
+            "지분법손익": self.지분법손익(year),
+            "금융손익": self.금융손익(year),
+            "기타손익": self.기타손익(year),
+            "법인세비용차감전순이익": self.법인세비용차감전순이익(year),
+            "법인세비용": self.법인세비용(year),
+            "당기순이익": self.당기순이익(year),
+            "주주환원율": -1 * self.주주환원율(year),
+            "주주환원": -1 * self.주주환원(year)
+        }
