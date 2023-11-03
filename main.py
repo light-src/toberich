@@ -1,22 +1,38 @@
 import yticker
-import yfinance as yf
-import terms
+from flask import Flask, request, json, jsonify
 
 
-def print_ticker(company):
-    print_years = [2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026]
+app = Flask(__name__)
+json.provider.DefaultJSONProvider.ensure_ascii = False
 
-    tk = ticker.YTicker(company)
-    tk.set_use_non_growth_threshold(True)
-    print(tk)
-    for year in print_years:
-        print("---------------------------------------")
-        print("------------" + str(year) + "년도 재무정보 ------------")
-        print("---------------------------------------")
-        print(tk.string(year))
+
+@app.get('/info')
+def info():
+    request_ticker = request.args.get('ticker')
+
+    if request_ticker is None:
+        return "ticker 가 누락되었습니다.", 400
+
+    ticker = yticker.YTicker(request_ticker)
+
+    return jsonify(ticker.info())
+
+
+@app.get('/financial_info')
+def financial_info():
+    request_ticker = request.args.get('ticker')
+    request_year = request.args.get('year')
+
+    if request_ticker is None:
+        return "ticker 가 누락되었습니다.", 400
+
+    if request_year is None:
+        return "year 가 누락되었습니다.", 400
+
+    ticker = yticker.YTicker(request_ticker)
+
+    return jsonify(ticker.financial_info(int(request_year)))
 
 
 if __name__ == '__main__':
-    print_ticker("213500.KS")
-    # meta = yf.Ticker('323410.KS')
-    # print(meta.cashflow.index)
+    app.run(debug=True)
