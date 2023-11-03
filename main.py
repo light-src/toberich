@@ -3,7 +3,7 @@ import yfinance
 import yticker
 
 if __name__ == '__main__':
-    tt = yticker.YTicker("000270.KS")
+    tt = yticker.YTicker("META")
     print("--------Ticker---------")
     print(tt)
     print("-----------------")

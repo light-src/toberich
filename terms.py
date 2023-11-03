@@ -83,8 +83,10 @@ FinancingCashFlow = 'Financing Cash Flow'
 # Total Unusual Items Excluding Goodwill
 # Special Income Charges
 
+## https://github.com/light-src/toberich/issues/10
 판관비리스트 = [
     SellingAndMarketingExpense,
+    GeneralAndAdministrativeExpense,
     SellingGeneralAndAdministration
 ]
 
@@ -108,10 +110,10 @@ FinancingCashFlow = 'Financing Cash Flow'
     TotalUnusualItems
 ]
 
+## https://github.com/light-src/toberich/issues/9
 주주환원리스트 = [
     RepurchaseOfCapitalStock,
     CommonStockDividendPaid,
     CashDividendsPaid,
-    FinancingCashFlow,
     CommonStockPayments
 ]

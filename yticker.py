@@ -147,6 +147,9 @@ class YTicker(ticker.Ticker):
         day = self.target_day(year)
         return self.element.cashflow.loc[index][day]
 
+    def 원본데이터(self, year):
+        return year in self.default_years
+
     def 매출액(self, year):
         if (self._use_non_growth_threshold and
                 year > self.this_year + self.non_growth_threshold):
@@ -192,7 +195,8 @@ class YTicker(ticker.Ticker):
 
     def 판매비와관리비(self, year):
         return execute_fns([
-            lambda: sum_of_keys(self._손익계산서, terms.판관비리스트, year),
+            lambda: sum_of_keys(self._손익계산서, [terms.SellingGeneralAndAdministration], year),
+            lambda: sum_of_keys(self._손익계산서, [terms.SellingAndMarketingExpense, terms.GeneralAndAdministrativeExpense], year),
             lambda: self.매출액(year) * self.매출액대비판관비율()
         ])
 
@@ -250,32 +254,40 @@ class YTicker(ticker.Ticker):
             lambda: self.법인세비용차감전순이익(year) - self.법인세비용(year)
         ])
 
-    주주환원dict = dict()
+    def 주주환원식(self, year):
+        if year not in self.default_years:
+            return 0
+
+        현금배당 = execute_fns([
+            lambda: sum_of_keys(self._현금흐름표, [terms.CashDividendsPaid], year),
+            lambda: sum_of_keys(self._현금흐름표, [terms.CommonStockDividendPaid], year),
+        ])
+        자사주매입 = sum_of_keys(self._현금흐름표, [terms.RepurchaseOfCapitalStock], year)
+        if 자사주매입 == 0:
+            stockpayment = sum_of_keys(self._현금흐름표, [terms.CommonStockPayments], year)
+            if stockpayment < 0:
+                자사주매입 = stockpayment
+
+        return 현금배당 + 자사주매입
 
     def 주주환원(self, year):
-        result = self.주주환원dict.get(year)
-        if result is None:
-            self.주주환원dict[year] = execute_fns([
-                lambda: sum_of_keys(self._현금흐름표, terms.주주환원리스트, year),
-                lambda: self.평균주주환원율(year) * self.당기순이익(year)
-            ])
-            result = self.주주환원dict[year]
-        return result
+        if year in self.default_years:
+            return self.주주환원식(year)
+        return self.주주환원율(year) * self.당기순이익(year)
 
     def 주주환원율(self, year):
-        if year in self.default_years:
-            return sum_of_keys(self._현금흐름표, terms.주주환원리스트, year)/self.당기순이익(year)
-        return 0
-
-    def 평균주주환원율(self, year):
         if (self._use_non_growth_threshold and
                 year > self.this_year + self.non_growth_threshold):
             return self.non_growth_dividend_yield
+        if year in self.default_years:
+            return self.주주환원식(year)/self.당기순이익(year)
+        return self.평균주주환원율()
 
+    def 평균주주환원율(self):
         total_cost = 0
         cnt = 0
         for y in self.default_years:
-            주주환원 = sum_of_keys(self._현금흐름표, terms.주주환원리스트, y)
+            주주환원 = self.주주환원식(y)
             if 주주환원 != 0:
                 cost = 주주환원 / self.당기순이익(y)
                 total_cost += cost
@@ -302,11 +314,12 @@ class YTicker(ticker.Ticker):
             + "시가총액 : " + str(self.시가총액()) + "\n" \
             + "평균 매출액 증가율 : " + str(self.평균매출액증가율()) + "\n" \
             + "예상할인율 : " + str(self.예상할인율()) + "\n" \
-            + "주주환원율 : " + str(-1 * self.평균주주환원율(2023)) + "\n" \
+            + "평균주주환원율 : " + str(-1 * self.평균주주환원율()) + "\n" \
             + "리스크 프리미엄 : " + str(self.리스크프리미엄())
 
     def string(self, year):
-        return "매출액 : " + str(self.매출액(year)) + "\n" \
+        return "원본데이터 : " + str(self.원본데이터(year)) + "\n" \
+            + "매출액 : " + str(self.매출액(year)) + "\n" \
             + "매출원가 : " + str(self.매출원가(year)) + "\n" \
             + "매출총이익 : " + str(self.매출총이익(year)) + "\n" \
             + "판관비 : " + str(self.판매비와관리비(year)) + "\n" \
