@@ -209,22 +209,22 @@ class YTicker(ticker.Ticker):
         ])
 
     def 지분법손익(self, year):
-        return execute_fns([
-            lambda: self._손익계산서(terms.NetIncomeIncludingNonControllingInterests, year),
-            lambda: average([self.지분법손익(y) for y in self.default_years])
-        ])
+        if year in self.default_years:
+            return self._손익계산서(terms.NetIncomeIncludingNonControllingInterests, year)
+        else:
+            return average([self.지분법손익(y) for y in self.default_years])
 
     def 금융손익(self, year):
-        return execute_fns([
-            lambda: sum_of_keys(self._손익계산서, terms.금융손익리스트, year),
-            lambda: average([self.금융손익(y) for y in self.default_years])
-        ])
+        if year in self.default_years:
+            return sum_of_keys(self._손익계산서, terms.금융손익리스트, year)
+        else:
+            return average([self.금융손익(y) for y in self.default_years])
 
     def 기타손익(self, year):
-        return execute_fns([
-            lambda: sum_of_keys(self._손익계산서, terms.기타손익리스트, year),
-            lambda: average([self.기타손익(y) for y in self.default_years])
-        ])
+        if year in self.default_years:
+            return sum_of_keys(self._손익계산서, terms.기타손익리스트, year)
+        else:
+            return average([self.기타손익(y) for y in self.default_years])
 
     def 법인세비용차감전순이익(self, year):
         return execute_fns([
@@ -257,12 +257,17 @@ class YTicker(ticker.Ticker):
         if result is None:
             self.주주환원dict[year] = execute_fns([
                 lambda: sum_of_keys(self._현금흐름표, terms.주주환원리스트, year),
-                lambda: self.주주환원율(year) * self.당기순이익(year)
+                lambda: self.평균주주환원율(year) * self.당기순이익(year)
             ])
             result = self.주주환원dict[year]
         return result
 
     def 주주환원율(self, year):
+        if year in self.default_years:
+            return sum_of_keys(self._현금흐름표, terms.주주환원리스트, year)/self.당기순이익(year)
+        return 0
+
+    def 평균주주환원율(self, year):
         if (self._use_non_growth_threshold and
                 year > self.this_year + self.non_growth_threshold):
             return self.non_growth_dividend_yield
@@ -278,7 +283,7 @@ class YTicker(ticker.Ticker):
         return total_cost / cnt
 
     def 예상할인율(self):
-        cashflow = [-1 * self.시가총액()] + [-1 * self.주주환원(y) for y in range(2020, 2060)]
+        cashflow = [-1 * self.시가총액()] + [-1 * self.주주환원(y) for y in range(2020, 2040)]
         return calculator.irr(cashflow)
 
     def set_시가총액(self, 시가총액):
@@ -297,6 +302,7 @@ class YTicker(ticker.Ticker):
             + "시가총액 : " + str(self.시가총액()) + "\n" \
             + "평균 매출액 증가율 : " + str(self.평균매출액증가율()) + "\n" \
             + "예상할인율 : " + str(self.예상할인율()) + "\n" \
+            + "주주환원율 : " + str(-1 * self.평균주주환원율(2023)) + "\n" \
             + "리스크 프리미엄 : " + str(self.리스크프리미엄())
 
     def string(self, year):
