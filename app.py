@@ -1,4 +1,6 @@
+import slack_response
 import yticker
+import threading
 from flask import Flask, request, json, jsonify
 
 
@@ -40,44 +42,41 @@ def financial_info():
         return e, 500
 
 
-def slack_response(text):
-    return jsonify({
-        "response_type": "in_channel",  # "in_channel" or "ephemeral"
-        "text": text,
-    })
-
-
 @app.post('/slack/info')
 def slack_info():
     data = request.form
-    text = data.get('text').split(" ")
-    if len(text) < 1:
-        return slack_response("invalid input, test must have #ticker")
+    text = data.get('text')
+    channel_id = data.get('channel_id')
+    if not isinstance(text, str):
+        return slack_response.slack_response("invalid input, test must have #ticker")
 
-    request_ticker = text[0]
-    ticker = yticker.YTicker(request_ticker)
-
-    try:
-        return slack_response(ticker.info())
-    except Exception as e:
-        return e, 500
+    request_ticker = text.split(" ")[0]
+    thread = threading.Thread(target=slack_response.send_slack_info, args=[request_ticker, channel_id])
+    thread.start()
+    return slack_response.slack_response(f"request ${request_ticker} received")
 
 
 @app.post('/slack/financial_info')
 def slack_financial_info():
     data = request.form
-    text = data.get('text').split(" ")
-    if len(text) < 2:
-        return slack_response("invalid input, test must have #ticker #year")
+    text = data.get('text')
+    channel_id = data.get('channel_id')
 
-    request_ticker = text[0]
-    request_year = text[1]
-    ticker = yticker.YTicker(request_ticker)
+    if not isinstance(text, str):
+        return slack_response.slack_response("invalid input, test must have #ticker #year")
 
-    try:
-        return slack_response(ticker.financial_info(int(request_year)))
-    except Exception as e:
-        return e, 500
+    split = text.split(" ")
+    if len(split) < 2:
+        return slack_response.slack_response("invalid input, test must have #ticker #year")
+
+    request_ticker = split[0]
+    request_year = split[1]
+    thread = threading.Thread(
+        target=slack_response.send_slack_financial_info,
+        args=[request_ticker, request_year, channel_id]
+    )
+    thread.start()
+    return slack_response.slack_response(f"request ${request_ticker} ${request_year} received")
 
 
 if __name__ == '__main__':
