@@ -349,27 +349,3 @@ class YTicker(ticker.Ticker):
 
     def 리스크프리미엄(self):
         return self.예상할인율() - self.국채수익률
-
-    def info_str(self):
-        return "Ticker : " + self.ticker + "\n" \
-            + "시가총액 : " + str(self.시가총액()) + "\n" \
-            + "평균 매출액 증가율 : " + str(self.평균매출액증가율()) + "\n" \
-            + "예상할인율 : " + str(self.예상할인율()) + "\n" \
-            + "평균주주환원율 : " + str(-1 * self.평균주주환원율()) + "\n" \
-            + "리스크 프리미엄 : " + str(self.리스크프리미엄())
-
-    def financial_info_str(self, year):
-        return "원본데이터 : " + str(self.원본데이터(year)) + "\n" \
-            + "매출액 : " + str(self.매출액(year)) + "\n" \
-            + "매출원가 : " + str(self.매출원가(year)) + "\n" \
-            + "매출총이익 : " + str(self.매출총이익(year)) + "\n" \
-            + "판관비 : " + str(self.판매비와관리비(year)) + "\n" \
-            + "영업이익 : " + str(self.영업이익(year)) + "\n" \
-            + "지분법손익 : " + str(self.지분법손익(year)) + "\n" \
-            + "금융손익 : " + str(self.금융손익(year)) + "\n" \
-            + "기타손익 : " + str(self.기타손익(year)) + "\n" \
-            + "법인세비용차감전순이익 : " + str(self.법인세비용차감전순이익(year)) + "\n" \
-            + "법인세비용 : " + str(self.법인세비용(year)) + "\n" \
-            + "당기순이익 : " + str(self.당기순이익(year)) + "\n" \
-            + "주주환원율 : " + str(-1 * self.주주환원율(year)) + "\n" \
-            + "주주환원 : " + str(-1 * self.주주환원(year))

@@ -1,6 +1,16 @@
 from abc import ABC, abstractmethod
 
 
+def row_format(key, value):
+    if isinstance(value, float):
+        value = int_format(value)
+    return f"{key: <20} {value: <50}\n"
+
+
+def int_format(value):
+    return format(value, ",")
+
+
 class Ticker(ABC):
     ticker = ""
 
@@ -122,3 +132,21 @@ class Ticker(ABC):
             "주주환원율": -1 * self.주주환원율(year),
             "주주환원": -1 * self.주주환원(year)
         }
+
+    def info_str(self):
+        info = ""
+        info_dict = self.info()
+        for key in info_dict:
+            info += row_format(key, info_dict[key])
+
+        return f"                🏢{self.ticker}정보 🏢 \n" \
+            + info
+
+    def financial_info_str(self, year):
+        info = ""
+        info_dict = self.financial_info(year)
+        for key in info_dict:
+            info += row_format(key, info_dict[key])
+
+        return f"           💸 {year}년도 {self.ticker}정보 💸 \n" \
+            + info

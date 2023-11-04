@@ -33,3 +33,6 @@ def send_slack_financial_info(ticker: str, year: int, channel: str):
     ticker = yticker.YTicker(ticker)
     send_slack(ticker.financial_info_str(year), channel)
 
+
+if __name__ == "__main__":
+    send_slack_info("META", "C06486XKLVA")
