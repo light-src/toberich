@@ -19,6 +19,7 @@ def send_slack(msg, channel):
         client = WebClient(token=token)
         client.chat_postMessage(
             channel=channel,
+            mkrdwn=True,
             text=msg)
     except SlackApiError as e:
         print(f"Error: {e}")
@@ -26,13 +27,15 @@ def send_slack(msg, channel):
 
 def send_slack_info(ticker, channel):
     ticker = yticker.YTicker(ticker)
-    send_slack(ticker.info_str(), channel)
+    send_slack(ticker.info_slack_str(), channel)
 
 
 def send_slack_financial_info(ticker: str, year: int, channel: str):
     ticker = yticker.YTicker(ticker)
-    send_slack(ticker.financial_info_str(year), channel)
+    send_slack(ticker.financial_info_slack_str(year), channel)
 
 
 if __name__ == "__main__":
     send_slack_info("META", "C06486XKLVA")
+    send_slack_financial_info("META", 2022, "C06486XKLVA")
+
