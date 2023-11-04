@@ -47,7 +47,7 @@ def slack_response(text):
     })
 
 
-@app.get('/slack/info')
+@app.post('/slack/info')
 def info():
     data = request.form
     text = data.get('text').split(" ")
@@ -63,7 +63,7 @@ def info():
         return e, 500
 
 
-@app.get('/slack/financial_info')
+@app.post('/slack/financial_info')
 def financial_info():
     data = request.form
     text = data.get('text').split(" ")
