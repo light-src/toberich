@@ -139,7 +139,7 @@ class Ticker(ABC):
         for key in info_dict:
             info += row_format(key, info_dict[key])
 
-        return f"                🏢{self.ticker}정보 🏢 \n" \
+        return f"🏢 *{self.ticker}정보* 🏢\n" \
             + info
 
     def financial_info_str(self, year):
@@ -148,5 +148,5 @@ class Ticker(ABC):
         for key in info_dict:
             info += row_format(key, info_dict[key])
 
-        return f"           💸 {year}년도 {self.ticker}정보 💸 \n" \
+        return f" 💸 *{year}년도 {self.ticker}정보* 💸\n" \
             + info
