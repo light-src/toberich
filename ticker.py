@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 def row_format(key, value):
     if isinstance(value, float):
         value = int_format(value)
-    return f"{key: <30} {value: <50}\n"
+    return f"{key: <40} {value: <50}\n"
 
 
 def int_format(value):
@@ -109,9 +109,9 @@ class Ticker(ABC):
         return {
             "Ticker": self.ticker,
             "Market Cap": self.시가총액(),
-            "Average Revenue Growth Rate": self.평균매출액증가율(),
+            "Avg RevenueGrowth Rate": self.평균매출액증가율(),
             "Expected Discount Rate": self.예상할인율(),
-            "Average Shareholder Yield": -1 * self.평균주주환원율(),
+            "Avg Shareholder Yield": -1 * self.평균주주환원율(),
             "Risk Premium": self.리스크프리미엄(),
         }
 
@@ -133,20 +133,24 @@ class Ticker(ABC):
             "Shareholder Return": -1 * self.주주환원(year)
         }
 
-    def info_str(self):
+    def info_slack_str(self):
         info = ""
         info_dict = self.info()
         for key in info_dict:
             info += row_format(key, info_dict[key])
 
         return f"🏢 *{self.ticker}정보* 🏢\n" \
-            + info
+            + "```\n" \
+            + info \
+            + "```\n"
 
-    def financial_info_str(self, year):
+    def financial_info_slack_str(self, year):
         info = ""
         info_dict = self.financial_info(year)
         for key in info_dict:
             info += row_format(key, info_dict[key])
 
         return f" 💸 *{year}년도 {self.ticker}정보* 💸\n" \
-            + info
+            + "```\n" \
+            + info \
+            + "```\n"
