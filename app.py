@@ -73,7 +73,7 @@ def slack_financial_info():
     request_year = split[1]
     thread = threading.Thread(
         target=slack_response.send_slack_financial_info,
-        args=[request_ticker, request_year, channel_id]
+        args=[request_ticker, int(request_year), channel_id]
     )
     thread.start()
     return slack_response.slack_response(f"request ${request_ticker} ${request_year} received")
