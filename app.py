@@ -40,5 +40,45 @@ def financial_info():
         return e, 500
 
 
+def slack_response(text):
+    return jsonify({
+        "response_type": "in_channel",  # "in_channel" or "ephemeral"
+        "text": text,
+    })
+
+
+@app.get('/slack/info')
+def info():
+    data = request.form
+    text = data.get('text').split(" ")
+    if len(text) < 1:
+        return slack_response("invalid input, test must have #ticker")
+
+    request_ticker = text[0]
+    ticker = yticker.YTicker(request_ticker)
+
+    try:
+        return slack_response(ticker.info())
+    except Exception as e:
+        return e, 500
+
+
+@app.get('/slack/financial_info')
+def financial_info():
+    data = request.form
+    text = data.get('text').split(" ")
+    if len(text) < 2:
+        return slack_response("invalid input, test must have #ticker #year")
+
+    request_ticker = text[0]
+    request_year = text[1]
+    ticker = yticker.YTicker(request_ticker)
+
+    try:
+        return slack_response(ticker.financial_info(int(request_year)))
+    except Exception as e:
+        return e, 500
+
+
 if __name__ == '__main__':
     app.run(debug=True, port=8080, host='0.0.0.0')
