@@ -48,7 +48,7 @@ def slack_response(text):
 
 
 @app.post('/slack/info')
-def info():
+def slack_info():
     data = request.form
     text = data.get('text').split(" ")
     if len(text) < 1:
@@ -64,7 +64,7 @@ def info():
 
 
 @app.post('/slack/financial_info')
-def financial_info():
+def slack_financial_info():
     data = request.form
     text = data.get('text').split(" ")
     if len(text) < 2:
