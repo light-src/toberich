@@ -38,6 +38,7 @@ def sum_of_keys(fn, keys, year):
 class YTicker(ticker.Ticker):
     def __init__(self, tt):
         self.ticker = tt
+        self._cache = {}
         self._시가총액 = None
         self._국채수익률 = None
         self._use_non_growth_threshold = False
@@ -154,14 +155,18 @@ class YTicker(ticker.Ticker):
         if (self._use_non_growth_threshold and
                 year > self.this_year + self.non_growth_threshold):
             value = self.매출액(year - 1) * self.non_growth_inflation_rate
+        elif year in self.default_years:
+            value = self._손익계산서(terms.TotalRevenue, year)
+            if value == 0:
+                raise Exception(f"total revenue is not exist in real data in ${year} years")
         else:
-            value = execute_fns([
-                lambda: self._손익계산서(terms.TotalRevenue, year),
-                lambda: self.매출액(year - 1) * (1 + self.평균매출액증가율())
-            ])
+            value = self.매출액(year - 1) * (1 + self.평균매출액증가율())
         return value
 
     def 평균매출액증가율(self):
+        if self._cache.get("평균매출액증가율") is not None:
+            return self._cache.get("평균매출액증가율")
+
         total_sales_growth_rate = 0
         len_years = len(self.default_years)
         for i in range(len_years):
@@ -173,44 +178,64 @@ class YTicker(ticker.Ticker):
                         self.매출액(prev_year)
                 )
                 total_sales_growth_rate += sales_growth_rate
-        return total_sales_growth_rate / len_years
+        self._cache["평균매출액증가율"] = total_sales_growth_rate / len_years
+        return self._cache["평균매출액증가율"]
 
     def 매출원가(self, year):
-        return execute_fns([
-            lambda: self._손익계산서(terms.CostOfRevenue, year),
-            lambda: self.매출액(year) * self.평균매출원가율()
-        ])
+        if year in self.default_years:
+            value = self._손익계산서(terms.CostOfRevenue, year)
+            if value == 0:
+                raise Exception(f"cost of revenue is not exist in real data in ${year} years")
+        else:
+            value = self.매출액(year) * self.평균매출원가율()
+        return value
 
     def 평균매출원가율(self):
+        if self._cache.get("평균매출원가율") is not None:
+            return self._cache.get("평균매출원가율")
         total_cost_of_revenue = 0
         for year in self.default_years:
             total_cost_of_revenue += (self.매출원가(year) / self.매출액(year))
-        return total_cost_of_revenue / len(self.default_years)
+        self._cache["평균매출원가율"] = total_cost_of_revenue / len(self.default_years)
+        return self._cache["평균매출원가율"]
 
     def 매출총이익(self, year):
-        return execute_fns([
-            lambda: self._손익계산서(terms.GrossProfit, year),
-            lambda: self.매출액(year) - self.매출원가(year)
-        ])
+        if year in self.default_years:
+            value = self._손익계산서(terms.GrossProfit, year)
+            if value == 0:
+                raise Exception(f"gross profit is not exist in real data in ${year} years")
+        else:
+            value = self.매출액(year) - self.매출원가(year)
+        return value
 
     def 판매비와관리비(self, year):
         return execute_fns([
             lambda: sum_of_keys(self._손익계산서, [terms.SellingGeneralAndAdministration], year),
-            lambda: sum_of_keys(self._손익계산서, [terms.SellingAndMarketingExpense, terms.GeneralAndAdministrativeExpense], year),
+            lambda: sum_of_keys(
+                self._손익계산서,
+                [terms.SellingAndMarketingExpense, terms.GeneralAndAdministrativeExpense],
+                year
+            ),
             lambda: self.매출액(year) * self.매출액대비판관비율()
         ])
 
     def 매출액대비판관비율(self):
+        if self._cache.get("매출액대비판관비율") is not None:
+            return self._cache.get("매출액대비판관비율")
         total_sg_n_a_percent = 0
         for year in self.default_years:
             total_sg_n_a_percent += (self.판매비와관리비(year) / self.매출액(year))
-        return total_sg_n_a_percent / len(self.default_years)
+        self._cache["매출액대비판관비율"] = total_sg_n_a_percent / len(self.default_years)
+        return self._cache["매출액대비판관비율"]
 
     def 영업이익(self, year):
-        return execute_fns([
-            lambda: self._손익계산서(terms.OperatingIncome, year),
-            lambda: self.매출총이익(year) - self.판매비와관리비(year)
-        ])
+        if year in self.default_years:
+            value = self._손익계산서(terms.OperatingIncome, year)
+            if value == 0:
+                raise Exception(f"operating income is not exist in real data in ${year} years")
+        else:
+            value = self.매출총이익(year) - self.판매비와관리비(year)
+        return value
 
     def 지분법손익(self, year):
         if year in self.default_years:
@@ -231,10 +256,13 @@ class YTicker(ticker.Ticker):
             return average([self.기타손익(y) for y in self.default_years])
 
     def 법인세비용차감전순이익(self, year):
-        return execute_fns([
-            lambda: self._손익계산서(terms.PretaxIncome, year),
-            lambda: self.영업이익(year) + self.지분법손익(year) + self.금융손익(year) + self.기타손익(year)
-        ])
+        if year in self.default_years:
+            value = self._손익계산서(terms.PretaxIncome, year)
+            if value == 0:
+                raise Exception(f"pretax income is not exist in real data in ${year} years")
+        else:
+            value = self.영업이익(year) + self.지분법손익(year) + self.금융손익(year) + self.기타손익(year)
+        return value
 
     def 법인세비용(self, year):
         return execute_fns([
@@ -243,16 +271,22 @@ class YTicker(ticker.Ticker):
         ])
 
     def 평균유효세율(self):
+        if self._cache.get("평균유효세율") is not None:
+            return self._cache.get("평균유효세율")
         total_tax_rate = 0
         for year in self.default_years:
             total_tax_rate += self.법인세비용(year) / self.법인세비용차감전순이익(year)
-        return total_tax_rate / len(self.default_years)
+        self._cache["평균유효세율"] = total_tax_rate / len(self.default_years)
+        return self._cache["평균유효세율"]
 
     def 당기순이익(self, year):
-        return execute_fns([
-            lambda: self._손익계산서(terms.NetIncome, year),
-            lambda: self.법인세비용차감전순이익(year) - self.법인세비용(year)
-        ])
+        if year in self.default_years:
+            value = self._손익계산서(terms.NetIncome, year)
+            if value == 0:
+                raise Exception(f"net income is not exist in real data in ${year} years")
+        else:
+            value = self.법인세비용차감전순이익(year) - self.법인세비용(year)
+        return value
 
     def 주주환원식(self, year):
         if year not in self.default_years:
@@ -284,6 +318,9 @@ class YTicker(ticker.Ticker):
         return self.평균주주환원율()
 
     def 평균주주환원율(self):
+        if self._cache.get("평균주주환원율") is not None:
+            return self._cache.get("평균주주환원율")
+
         total_cost = 0
         cnt = 0
         for y in self.default_years:
@@ -292,11 +329,15 @@ class YTicker(ticker.Ticker):
                 cost = 주주환원 / self.당기순이익(y)
                 total_cost += cost
                 cnt += 1
-        return total_cost / cnt
+        self._cache["평균주주환원율"] = total_cost / cnt
+        return self._cache["평균주주환원율"]
 
     def 예상할인율(self):
+        if self._cache.get("예상할인율") is not None:
+            return self._cache.get("예상할인율")
         cashflow = [-1 * self.시가총액()] + [-1 * self.주주환원(y) for y in range(2020, 2040)]
-        return calculator.irr(cashflow)
+        self._cache["예상할인율"] = calculator.irr(cashflow)
+        return self._cache["예상할인율"]
 
     def set_시가총액(self, 시가총액):
         self._시가총액 = 시가총액
