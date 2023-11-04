@@ -26,10 +26,10 @@ def send_slack(msg, channel):
 
 def send_slack_info(ticker, channel):
     ticker = yticker.YTicker(ticker)
-    send_slack(ticker.info(), channel)
+    send_slack(ticker.info_str(), channel)
 
 
 def send_slack_financial_info(ticker: str, year: int, channel: str):
     ticker = yticker.YTicker(ticker)
-    send_slack(ticker.financial_info(year), channel)
+    send_slack(ticker.financial_info_str(year), channel)
 

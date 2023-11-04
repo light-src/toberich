@@ -350,7 +350,7 @@ class YTicker(ticker.Ticker):
     def 리스크프리미엄(self):
         return self.예상할인율() - self.국채수익률
 
-    def __str__(self):
+    def info_str(self):
         return "Ticker : " + self.ticker + "\n" \
             + "시가총액 : " + str(self.시가총액()) + "\n" \
             + "평균 매출액 증가율 : " + str(self.평균매출액증가율()) + "\n" \
@@ -358,7 +358,7 @@ class YTicker(ticker.Ticker):
             + "평균주주환원율 : " + str(-1 * self.평균주주환원율()) + "\n" \
             + "리스크 프리미엄 : " + str(self.리스크프리미엄())
 
-    def string(self, year):
+    def financial_info_str(self, year):
         return "원본데이터 : " + str(self.원본데이터(year)) + "\n" \
             + "매출액 : " + str(self.매출액(year)) + "\n" \
             + "매출원가 : " + str(self.매출원가(year)) + "\n" \
