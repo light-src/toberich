@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 def row_format(key, value):
     if isinstance(value, float):
         value = int_format(value)
-    return f"{key: <20} {value: <50}\n"
+    return f"{key: <30} {value: <50}\n"
 
 
 def int_format(value):
@@ -108,29 +108,29 @@ class Ticker(ABC):
     def info(self):
         return {
             "Ticker": self.ticker,
-            "시가총액": self.시가총액(),
-            "평균 매출액 증가율": self.평균매출액증가율(),
-            "예상할인율": self.예상할인율(),
-            "평균주주환원율": -1 * self.평균주주환원율(),
-            "리스크 프리미엄": self.리스크프리미엄(),
+            "Market Cap": self.시가총액(),
+            "Average Revenue Growth Rate": self.평균매출액증가율(),
+            "Expected Discount Rate": self.예상할인율(),
+            "Average Shareholder Yield": -1 * self.평균주주환원율(),
+            "Risk Premium": self.리스크프리미엄(),
         }
 
     def financial_info(self, year):
         return {
-            "원본데이터": self.원본데이터(year),
-            "매출액": self.매출액(year),
-            "매출원가": self.매출원가(year),
-            "매출총이익": self.매출총이익(year),
-            "판관비": self.판매비와관리비(year),
-            "영업이익": self.영업이익(year),
-            "지분법손익": self.지분법손익(year),
-            "금융손익": self.금융손익(year),
-            "기타손익": self.기타손익(year),
-            "법인세비용차감전순이익": self.법인세비용차감전순이익(year),
-            "법인세비용": self.법인세비용(year),
-            "당기순이익": self.당기순이익(year),
-            "주주환원율": -1 * self.주주환원율(year),
-            "주주환원": -1 * self.주주환원(year)
+            "Original Data": self.원본데이터(year),
+            "Total Revenue": self.매출액(year),
+            "Cost Of Revenue": self.매출원가(year),
+            "Gross Profit": self.매출총이익(year),
+            "SG&A": self.판매비와관리비(year),
+            "Operating Income": self.영업이익(year),
+            "Equity Method Income": self.지분법손익(year),
+            "Net Interest Income": self.금융손익(year),
+            "Other Income": self.기타손익(year),
+            "Pretax Income": self.법인세비용차감전순이익(year),
+            "Tax Provision": self.법인세비용(year),
+            "Net Income": self.당기순이익(year),
+            "Shareholder Yield": -1 * self.주주환원율(year),
+            "Shareholder Return": -1 * self.주주환원(year)
         }
 
     def info_str(self):
