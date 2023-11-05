@@ -14,6 +14,9 @@ SellingAndMarketingExpense = 'Selling And Marketing Expense'
 GeneralAndAdministrativeExpense = 'General And Administrative Expense'
 
 # 영업 이익 (Operating Income)
+# 영업 이익 ('Operating Revenue' - 'Operating Expense')
+OperatingRevenue = 'Operating Revenue'
+OperatingExpense = 'Operating Expense'
 OperatingIncome = 'Operating Income'
 
 # 지분법 손익 (Net Income Including NonControlling Interests)
