@@ -156,6 +156,7 @@ class Ticker(ABC):
                 "Equity Method Income": self.지분법손익(year),
                 "Net Interest Income": self.금융손익(year),
                 "Other Income": self.기타손익(year),
+                "Operating Income": self.영업이익(year),
                 "Pretax Income": self.법인세비용차감전순이익(year),
                 "Tax Provision": self.법인세비용(year),
                 "Net Income": self.당기순이익(year),
