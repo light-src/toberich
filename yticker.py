@@ -148,6 +148,18 @@ class YTicker(ticker.Ticker):
         day = self.target_day(year)
         return self.element.cashflow.loc[index][day]
 
+    def 손익계산서(self, year):
+        day = self.target_day(year)
+        return self.element.incomestmt[day]
+
+    def 재무상태표(self, year):
+        day = self.target_day(year)
+        return self.element.balancesheet[day]
+
+    def 현금흐름표(self, year):
+        day = self.target_day(year)
+        return self.element.cashflow[day]
+
     def 원본데이터(self, year):
         return year in self.default_years
 
