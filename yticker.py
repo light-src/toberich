@@ -92,9 +92,12 @@ class YTicker(ticker.Ticker):
 
     @property
     def default_data_years(self):
+        if self._cache.get("default_data_years") is not None:
+            return self._cache.get("default_data_years")
         cols = self.element.incomestmt.columns
         years = [col.year for col in cols]
-        return years
+        self._cache["default_data_years"] = years
+        return self._cache["default_data_years"]
 
     def set_non_growth_dividend_yield(self, dividend_yield):
         self._non_growth_dividend_yield = dividend_yield
@@ -242,12 +245,27 @@ class YTicker(ticker.Ticker):
 
     def 영업이익(self, year):
         if year in self.default_years:
-            value = self._손익계산서(terms.OperatingIncome, year)
+            value = execute_fns([
+                lambda: self._손익계산서(terms.OperatingIncome, year),
+                lambda: self._손익계산서(terms.OperatingRevenue, year) - self._손익계산서(terms.OperatingExpense, year),
+            ])
             if value == 0:
                 raise Exception(f"operating income is not exist in real data in ${year} years")
         else:
-            value = self.매출총이익(year) - self.판매비와관리비(year)
+            value = execute_fns([
+                lambda: self.매출총이익(year) - self.판매비와관리비(year),
+                lambda: self.매출액(year) * self.영업이익율()
+            ])
         return value
+
+    def 영업이익율(self):
+        if self._cache.get("영업이익율") is not None:
+            return self._cache.get("영업이익율")
+        elem = 0
+        for year in self.default_years:
+            elem += (self.매출액(year) / self.영업이익(year))
+        self._cache["영업이익율"] = elem / len(self.default_years)
+        return self._cache["영업이익율"]
 
     def 지분법손익(self, year):
         if year in self.default_years:
@@ -326,7 +344,7 @@ class YTicker(ticker.Ticker):
                 year > self.this_year + self.non_growth_threshold):
             return self.non_growth_dividend_yield
         if year in self.default_years:
-            return self.주주환원식(year)/self.당기순이익(year)
+            return self.주주환원식(year) / self.당기순이익(year)
         return self.평균주주환원율()
 
     def 평균주주환원율(self):
@@ -341,7 +359,10 @@ class YTicker(ticker.Ticker):
                 cost = 주주환원 / self.당기순이익(y)
                 total_cost += cost
                 cnt += 1
-        self._cache["평균주주환원율"] = total_cost / cnt
+        if cnt != 0:
+            self._cache["평균주주환원율"] = total_cost / cnt
+        else:
+            self._cache["평균주주환원율"] = 0
         return self._cache["평균주주환원율"]
 
     def 예상할인율(self):

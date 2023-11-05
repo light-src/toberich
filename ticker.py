@@ -52,6 +52,10 @@ class Ticker(ABC):
         pass
 
     @abstractmethod
+    def 영업이익율(self, year):
+        pass
+
+    @abstractmethod
     def 지분법손익(self, year):
         pass
 
@@ -108,29 +112,54 @@ class Ticker(ABC):
         pass
 
     def info(self):
-        return {
-            "Ticker": self.ticker,
-            "Market Cap": self.시가총액(),
-            "Avg RevenueGrowth Rate": self.평균매출액증가율(),
-            "Expected Discount Rate": self.예상할인율(),
-            "Avg Shareholder Yield": -1 * self.평균주주환원율(),
-            "Risk Premium": self.리스크프리미엄(),
-        }
+        try:
+            return {
+                "Ticker": self.ticker,
+                "Market Cap": self.시가총액(),
+                "Avg RevenueGrowth Rate": self.평균매출액증가율(),
+                "Expected Discount Rate": self.예상할인율(),
+                "Avg Shareholder Yield": -1 * self.평균주주환원율(),
+                "Risk Premium": self.리스크프리미엄(),
+            }
+        except KeyError:
+            return {
+                "Ticker": self.ticker,
+                "Market Cap": self.시가총액(),
+                "Avg RevenueGrowth Rate": self.평균매출액증가율(),
+                "Expected Discount Rate": self.예상할인율(),
+                "Avg Shareholder Yield": -1 * self.평균주주환원율(),
+                "Risk Premium": self.리스크프리미엄(),
+            }
 
     def financial_info(self, year):
-        return {
-            "Original Data": self.원본데이터(year),
-            "Total Revenue": self.매출액(year),
-            "Cost Of Revenue": self.매출원가(year),
-            "Gross Profit": self.매출총이익(year),
-            "SG&A": self.판매비와관리비(year),
-            "Operating Income": self.영업이익(year),
-            "Equity Method Income": self.지분법손익(year),
-            "Net Interest Income": self.금융손익(year),
-            "Other Income": self.기타손익(year),
-            "Pretax Income": self.법인세비용차감전순이익(year),
-            "Tax Provision": self.법인세비용(year),
-            "Net Income": self.당기순이익(year),
-            "Shareholder Yield": -1 * self.주주환원율(year),
-            "Shareholder Return": -1 * self.주주환원(year)
-        }
+        try:
+            result = {
+                "Original Data": self.원본데이터(year),
+                "Total Revenue": self.매출액(year),
+                "Cost Of Revenue": self.매출원가(year),
+                "Gross Profit": self.매출총이익(year),
+                "SG&A": self.판매비와관리비(year),
+                "Operating Income": self.영업이익(year),
+                "Equity Method Income": self.지분법손익(year),
+                "Net Interest Income": self.금융손익(year),
+                "Other Income": self.기타손익(year),
+                "Pretax Income": self.법인세비용차감전순이익(year),
+                "Tax Provision": self.법인세비용(year),
+                "Net Income": self.당기순이익(year),
+                "Shareholder Yield": -1 * self.주주환원율(year),
+                "Shareholder Return": -1 * self.주주환원(year)
+            }
+        except KeyError:
+            result = {
+                "Original Data": self.원본데이터(year),
+                "Total Revenue": self.매출액(year),
+                "Equity Method Income": self.지분법손익(year),
+                "Net Interest Income": self.금융손익(year),
+                "Other Income": self.기타손익(year),
+                "Pretax Income": self.법인세비용차감전순이익(year),
+                "Tax Provision": self.법인세비용(year),
+                "Net Income": self.당기순이익(year),
+                "Shareholder Yield": -1 * self.주주환원율(year),
+                "Shareholder Return": -1 * self.주주환원(year)
+            }
+        return result
