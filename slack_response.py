@@ -1,9 +1,17 @@
+import json
+
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 import os
 
 import yticker
 from flask import jsonify
+
+
+def int_format(value):
+    if isinstance(value, float):
+        return format(value, ",")
+    return str(value)
 
 
 def slack_response(text):
@@ -13,29 +21,127 @@ def slack_response(text):
     })
 
 
-def send_slack(msg, channel):
+def send_slack(blocks, channel):
     token = os.getenv("SLACK_API_TOKEN")
+    client = WebClient(token=token)
     try:
-        client = WebClient(token=token)
         client.chat_postMessage(
             channel=channel,
-            mkrdwn=True,
-            text=msg)
+            blocks=[{
+                "type": "divider"
+            }]
+        )
+        for block in blocks:
+            req = json.dumps(block)
+            client.chat_postMessage(
+                channel=channel,
+                mkrdwn=True,
+                blocks=req)
+        client.chat_postMessage(
+            channel=channel,
+            blocks=[{
+                "type": "divider"
+            }]
+        )
     except SlackApiError as e:
         print(f"Error: {e}")
 
 
+def dict_slack_content_to_blocks(title, keys, values):
+    block = [
+        {
+            "type": "header",
+            "text": {
+                "type": "plain_text",
+                "text": title,
+                "emoji": True
+            }
+        },
+    ]
+
+    for key in keys:
+        block.append({
+            "type": "section",
+            "fields": [
+                {
+                    "type": "mrkdwn",
+                    "text": f"*{key}*"
+                },
+                {
+                    "type": "mrkdwn",
+                    "text": int_format(values[key])
+                }
+            ]
+        })
+
+    return [block[i:i + 40] for i in range(0, len(block), 40)]
+
+
 def send_slack_info(ticker, channel):
-    ticker = yticker.YTicker(ticker)
-    send_slack(ticker.info_slack_str(), channel)
+    tt = yticker.YTicker(ticker)
+    send_slack(
+        dict_slack_content_to_blocks(
+            f"🏢 {ticker} info 🏢\n",
+            tt.info().keys(),
+            tt.info()),
+        channel
+    )
 
 
 def send_slack_financial_info(ticker: str, year: int, channel: str):
-    ticker = yticker.YTicker(ticker)
-    send_slack(ticker.financial_info_slack_str(year), channel)
+    tt = yticker.YTicker(ticker)
+    send_slack(
+        dict_slack_content_to_blocks(
+            f"💸 {year} {ticker} info 💸\n",
+            tt.financial_info(year).keys(),
+            tt.financial_info(year)
+        ),
+        channel
+    )
+
+
+def send_slack_incomestmt(ticker: str, year: int, channel: str):
+    tt = yticker.YTicker(ticker)
+    send_slack(
+        dict_slack_content_to_blocks(
+            f"💸 {year} {ticker} income sheet 💸\n",
+            tt.손익계산서(year).index,
+            tt.손익계산서(year)
+        ),
+        channel
+    )
+
+
+def send_slack_balancesheet(ticker: str, year: int, channel: str):
+    tt = yticker.YTicker(ticker)
+    send_slack(
+        dict_slack_content_to_blocks(
+            f"📁 {year} {ticker} balance sheet 📁\n",
+            tt.재무상태표(year).index,
+            tt.재무상태표(year)
+        ),
+        channel
+    )
+
+
+def send_slack_cashflow(ticker: str, year: int, channel: str):
+    tt = yticker.YTicker(ticker)
+    send_slack(
+        dict_slack_content_to_blocks(
+            f"📁 {year} {ticker} cashflow 📁\n",
+            tt.현금흐름표(year).index,
+            tt.현금흐름표(year)
+        ),
+        channel
+    )
 
 
 if __name__ == "__main__":
-    send_slack_info("META", "C06486XKLVA")
-    send_slack_financial_info("META", 2022, "C06486XKLVA")
-
+    ticker = "META"
+    year = 2022
+    channel = "C06486XKLVA"
+    send_slack_info(ticker, channel)
+    send_slack_financial_info(ticker, year, channel)
+    send_slack_incomestmt(ticker, year, channel)
+    send_slack_balancesheet(ticker, year, channel)
+    send_slack_cashflow(ticker, year, channel)
