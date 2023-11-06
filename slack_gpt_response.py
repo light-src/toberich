@@ -16,8 +16,11 @@ def send_slack(text: str, channel):
                     "type": "divider"
                 },
                 {
-                    "type": "mkrdwn",
-                    "text": text.strip()
+                    "type": "section",
+                    "text": {
+                        "type": "mrkdwn",
+                        "text": text
+                    }
                 },
                 {
                     "type": "divider"
@@ -35,3 +38,9 @@ def send_gpt_response(inquire: str, channel: str):
         channel
     )
 
+
+if __name__ == "__main__":
+    ticker = "META"
+    year = 2022
+    channel = "C06486XKLVA"
+    send_gpt_response("좋은 주식을 찾는 방법에 대해 알려줘", channel)
