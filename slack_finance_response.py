@@ -2,16 +2,27 @@ import json
 
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
+import dart_ticker
+import yticker
 import os
 
-import yticker
 from flask import jsonify
 
 
 def int_format(value):
+    if is_float(value):
+        value = float(value)
     if isinstance(value, float):
         return format(value, ",")
     return str(value)
+
+
+def is_float(s):
+    try:
+        float(s)
+        return True
+    except ValueError:
+        return False
 
 
 def slack_response(text):
@@ -78,7 +89,7 @@ def dict_slack_content_to_blocks(title, keys, values):
 
 
 def send_slack_info(ticker, channel):
-    tt = yticker.YTicker(ticker)
+    tt = usable_ticker(ticker)
     send_slack(
         dict_slack_content_to_blocks(
             f"🏢 {ticker} info 🏢\n",
@@ -89,7 +100,7 @@ def send_slack_info(ticker, channel):
 
 
 def send_slack_financial_info(ticker: str, year: int, channel: str):
-    tt = yticker.YTicker(ticker)
+    tt = usable_ticker(ticker)
     send_slack(
         dict_slack_content_to_blocks(
             f"💸 {year} {ticker} info 💸\n",
@@ -101,7 +112,7 @@ def send_slack_financial_info(ticker: str, year: int, channel: str):
 
 
 def send_slack_incomestmt(ticker: str, year: int, channel: str):
-    tt = yticker.YTicker(ticker)
+    tt = usable_ticker(ticker)
     send_slack(
         dict_slack_content_to_blocks(
             f"💸 {year} {ticker} income sheet 💸\n",
@@ -113,7 +124,7 @@ def send_slack_incomestmt(ticker: str, year: int, channel: str):
 
 
 def send_slack_balancesheet(ticker: str, year: int, channel: str):
-    tt = yticker.YTicker(ticker)
+    tt = usable_ticker(ticker)
     send_slack(
         dict_slack_content_to_blocks(
             f"📁 {year} {ticker} balance sheet 📁\n",
@@ -125,7 +136,7 @@ def send_slack_balancesheet(ticker: str, year: int, channel: str):
 
 
 def send_slack_cashflow(ticker: str, year: int, channel: str):
-    tt = yticker.YTicker(ticker)
+    tt = usable_ticker(ticker)
     send_slack(
         dict_slack_content_to_blocks(
             f"📁 {year} {ticker} cashflow 📁\n",
@@ -136,8 +147,18 @@ def send_slack_cashflow(ticker: str, year: int, channel: str):
     )
 
 
+def usable_ticker(tt):
+    candidates = [dart_ticker.DartTicker, yticker.YTicker]
+    for candidate in candidates:
+        candidate_ticker = candidate(tt)
+        if candidate_ticker.can_use():
+            return candidate_ticker
+
+    raise Exception("cannot find usable ticker type")
+
+
 if __name__ == "__main__":
-    ticker = "META"
+    ticker = "005930.ks"
     year = 2022
     channel = "C06486XKLVA"
     send_slack_info(ticker, channel)
