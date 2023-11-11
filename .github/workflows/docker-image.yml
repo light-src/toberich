@@ -53,6 +53,7 @@ jobs:
           script: |
             export OPEN_API_TOKEN=${{ secrets.OPEN_API_TOKEN }}
             export SLACK_API_TOKEN=${{ secrets.SLACK_API_TOKEN }}
+            export DART_API_TOKEN=${{ secrets.DART_API_TOKEN }}
             export FIRST_LINE=$(echo ${{ steps.docker_meta.outputs.tags }} | head -n 1)
             export IMAGE_TAG=$(echo $FIRST_LINE | cut -d':' -f2)
             docker-compose up --detach --force-recreate
