@@ -21,7 +21,7 @@ def is_float(s):
     try:
         float(s)
         return True
-    except ValueError:
+    except ValueError or TypeError:
         return False
 
 
