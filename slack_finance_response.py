@@ -14,6 +14,8 @@ def int_format(value):
         value = float(value)
     if isinstance(value, float):
         return format(value, ",")
+    if value == "":
+        value = "-"
     return str(value)
 
 
