@@ -42,7 +42,7 @@ class DartTicker(ticker.Ticker):
             return False
         try:
             self.손익계산서(2022)
-        except KeyError:
+        except Exception:
             return False
         return True
 
