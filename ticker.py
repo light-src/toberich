@@ -214,9 +214,9 @@ class Ticker(ABC):
         if self._cache.get("영업이익율") is not None:
             return self._cache.get("영업이익율")
         elem = 0
-        for year in self.default_years:
+        for year in range(self.first_year(), self.this_year):
             elem += (self.매출액(year) / self.영업이익(year))
-        self._cache["영업이익율"] = elem / len(self.default_years)
+        self._cache["영업이익율"] = elem / (self.this_year - self.first_year())
         return self._cache["영업이익율"]
 
     @abstractmethod
@@ -274,10 +274,12 @@ class Ticker(ABC):
     def 평균유효세율(self):
         if self._cache.get("평균유효세율") is not None:
             return self._cache.get("평균유효세율")
-        total_tax_rate = 0
+        total_tax = 0
+        total_revenue = 0
         for year in range(self.first_year(), self.this_year):
-            total_tax_rate += self.법인세비용(year) / self.법인세비용차감전순이익(year)
-        self._cache["평균유효세율"] = total_tax_rate / (self.this_year - self.first_year())
+            total_tax += self.법인세비용(year)
+            total_revenue += self.법인세비용차감전순이익(year)
+        self._cache["평균유효세율"] = total_tax / total_revenue
         return self._cache["평균유효세율"]
 
     @abstractmethod
@@ -297,7 +299,7 @@ class Ticker(ABC):
 
     def 주주환원(self, year) -> float:
         if year < self.this_year:
-            return self._주주환원(year)
+            return -1 * self._주주환원(year)
         return self.주주환원율(year) * self.당기순이익(year)
 
     def 주주환원율(self, year):
@@ -312,18 +314,19 @@ class Ticker(ABC):
         if self._cache.get("평균주주환원율") is not None:
             return self._cache.get("평균주주환원율")
 
-        total = 0
-        cnt = self.this_year - self.first_year()
+        total_주주환원 = 0
+        total_당기순이익 = 0
         for y in range(self.first_year(), self.this_year):
-            total += self.주주환원율(y)
-        self._cache["평균주주환원율"] = total / cnt
+            total_주주환원 += self.주주환원(y)
+            total_당기순이익 += self.당기순이익(y)
+        self._cache["평균주주환원율"] = total_주주환원 / total_당기순이익
         return self._cache["평균주주환원율"]
 
     def 예상할인율(self):
         if self._cache.get("예상할인율") is not None:
             return self._cache.get("예상할인율")
         cashflow = [-1 * self.시가총액()]
-        cashflow += [-1 * self.주주환원(y) for y in range(2020, 2040)]
+        cashflow += [self.주주환원(y) for y in range(2023, 2040)]
         self._cache["예상할인율"] = calculator.irr(cashflow)
         return self._cache["예상할인율"]
 
@@ -340,7 +343,7 @@ class Ticker(ABC):
             "시가 총액": self.시가총액(),
             "평균 매출액 증가율": self.평균매출액증가율(),
             "예상 할인율": self.예상할인율(),
-            "평균 주주 환원율": -1 * self.평균주주환원율(),
+            "평균 주주 환원율": self.평균주주환원율(),
             "리스크 프리미엄": self.리스크프리미엄(),
         }
 
@@ -359,8 +362,8 @@ class Ticker(ABC):
                 "법인세비용 차감전 순이익": self.법인세비용차감전순이익(year),
                 "법인세 비용": self.법인세비용(year),
                 "당기 순이익": self.당기순이익(year),
-                "주주 환원율": -1 * self.주주환원율(year),
-                "주주 환원": -1 * self.주주환원(year)
+                "주주 환원율": self.주주환원율(year),
+                "주주 환원": self.주주환원(year)
             }
         except KeyError:
             result = {
@@ -374,15 +377,7 @@ class Ticker(ABC):
                 "법인세비용 차감전 순이익": self.법인세비용차감전순이익(year),
                 "법인세 비용": self.법인세비용(year),
                 "당기 순이익": self.당기순이익(year),
-                "주주 환원율": -1 * self.주주환원율(year),
-                "주주 환원": -1 * self.주주환원(year)
+                "주주 환원율": self.주주환원율(year),
+                "주주 환원": self.주주환원(year)
             }
         return result
-
-
-if __name__ == "__main__":
-    stocks = fdr.StockListing('KRX')
-    stocks = stocks[stocks['Code'] == "323410"]['Marcap'].values[0]
-    print(stocks)
-    # latest = data.index[-1]
-    #  data.loc[latest].iloc[4] / 100

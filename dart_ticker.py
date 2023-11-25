@@ -1,10 +1,20 @@
+import json
 import os
 
+import db
+from ticker import sum_of_keys
 import ticker
 import OpenDartReader
 import dart_terms
 import pandas as pd
 import FinanceDataReader as fdr
+
+
+def to_float(value) -> float:
+    try:
+        return float(value)
+    except Exception:
+        return 0
 
 
 class DartTicker(ticker.Ticker):
@@ -19,9 +29,13 @@ class DartTicker(ticker.Ticker):
     def __init__(self, tt):
         api_key = os.getenv("DART_API_TOKEN")
         super().__init__(tt)
+        self.db = db.SQLiteDatabase()
         self._cache = {}
         self.ticker = tt
-        self.dart = OpenDartReader(api_key)
+        self.dart = OpenDartReader("38d76bb5143f100f8c8daeb4eb48ea8eee3ccf00")
+
+    def __del__(self):
+        self.db.close_connection()
 
     def can_use(self) -> bool:
         if not self.ticker.endswith(".ks"):
@@ -33,11 +47,17 @@ class DartTicker(ticker.Ticker):
         return True
 
     def first_year(self) -> int:
-        min = 2015
-        return min
+        if self._cache.get("first_year") is not None:
+            return self._cache.get("first_year")
+        for year in range(2015, self.this_year):
+            value = self._매출액(year)
+            if value != 0:
+                self._cache["first_year"] = year
+                return year
+        return self.this_year
 
     def _매출액(self, year):
-        return self._손익계산서(dart_terms.매출액, year)
+        return sum_of_keys(self._손익계산서, [dart_terms.매출액, dart_terms.수익매출액], year)
 
     def _매출원가(self, year):
         return self._손익계산서(dart_terms.매출원가, year)
@@ -80,14 +100,14 @@ class DartTicker(ticker.Ticker):
          value = self.손익계산서(year).loc[index]
         except KeyError:
             value = 0
-        return float(value)
+        return to_float(value)
 
     def _재무상태표(self, index, year):
         try:
          value = self.재무상태표(year).loc[index]
         except KeyError:
             value = 0
-        return float(value)
+        return to_float(value)
 
     def _현금흐름표(self, index, year):
         try:
@@ -96,31 +116,54 @@ class DartTicker(ticker.Ticker):
             value = 0
         if value == '':
             value = 0
-        return float(value)
+        return to_float(value)
 
     def 손익계산서(self, year):
-        return self._재무제표("손익계산서", year)[0]
+        try:
+            return self._재무제표("손익계산서", db.INCOMESTMT, year)
+        except Exception:
+            return self._재무제표("포괄손익계산서", db.INCOMESTMT, year)
 
     def 재무상태표(self, year):
-        return self._재무제표("재무상태표", year)[0]
+        return self._재무제표("재무상태표", db.BALANCESHEET, year)
 
     def 현금흐름표(self, year):
-        return self._재무제표("현금흐름표", year)[0]
+        return self._재무제표("현금흐름표", db.CASHFLOW, year)
 
-    def _재무제표(self, elem, year):
+    def _재무제표(self, elem, type, year):
         key = str(elem) + str(year)
         if self._cache.get(key) is not None:
             return self._cache.get(key)
-        tt = self.ticker.replace(".ks", "")
-        df = self.dart.finstate_all(tt, year)
-        raw = df[df['sj_nm'] == elem]
-        keys = raw['account_nm'].tolist()
-        values = raw['thstrm_amount'].tolist()
-        self._cache[key] = pd.DataFrame(values, index=keys)
+
+        value = self.db.select_data(self.ticker, year, type)
+        if value is None:
+            tt = self.ticker.replace(".ks", "")
+            df = self.dart.finstate_all(tt, year)
+            raw = df[df['sj_nm'] == elem]
+            keys = raw['account_nm'].tolist()
+            values = raw['thstrm_amount'].tolist()
+            data = pd.DataFrame(values, index=keys)[0]
+            self.db.insert_data(self.ticker, year, type, data.to_json())
+        else:
+            data_dict = json.loads(value)
+            data = pd.DataFrame(data_dict.values(), index=data_dict.keys())[0]
+
+        self._cache[key] = data
         return self._cache[key]
 
 
 if __name__ == "__main__":
-    d = DartTicker("삼성전자").손익계산서(2022)
-    print(d.index)
-    print(d)
+    pass
+    # from slack_finance_response import int_format
+    # d = DartTicker("035420")
+    # d.info()
+    # print(f"평균 유효세율 {int_format(d.평균유효세율())}")
+    # for y in range(2020, 2030):
+    #     print(f"---------{y}---------")
+    #     print(f"법인세 차감전 순이익 {int_format(d.법인세비용차감전순이익(y))}")
+    #     print(f"매출액 {int_format(d.매출액(y))} 매출원가 {int_format(d.매출원가(y))} 영업이익 {int_format(d.영업이익(y))} "
+    #           f"영업이익률 {int_format(d.영업이익(y) / d.매출액(y) )}")
+    #     print(f"주주환원율 {int_format(d.주주환원율(y))}")
+    #     print(f"당기순이익 {int_format(d.당기순이익(y))} 주주환원 {int_format(d.주주환원(y))} 영업이익 {int_format(d.영업이익(y))} 지분법손익 {int_format(d.지분법손익(y))} 금융손익 {int_format(d.금융손익(y))} 기타손익 {int_format(d.기타손익(y))} 법인세비용 {int_format(d.법인세비용(y))}")
+    # d = DartTicker("035420")
+    # print(d.info())
