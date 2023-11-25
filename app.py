@@ -1,6 +1,7 @@
 import slack_finance_response
 import slack_gpt_response
 import threading
+import db
 from flask import Flask, request, json
 
 
@@ -132,4 +133,8 @@ def slack_gpt():
 
 
 if __name__ == '__main__':
+    db = db.SQLiteDatabase()
+    db.create_table_if_not_exists()
+    db.close_connection()
+
     app.run(debug=True, port=8080, host='0.0.0.0')
