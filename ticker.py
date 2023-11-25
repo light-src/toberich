@@ -363,7 +363,8 @@ class Ticker(ABC):
             "법인세 비용": self.법인세비용,
             "당기 순이익": self.당기순이익,
             "주주 환원율": self.주주환원율,
-            "주주 환원": self.주주환원
+            "주주 환원": self.주주환원,
+            "영업 이익률": lambda year: self.영업이익(year) / self.매출액(year) if self.매출액(year) != 0 else -1
         }
 
         result = {}
