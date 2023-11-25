@@ -187,8 +187,8 @@ if __name__ == "__main__":
     # d_b.create_table_if_not_exists()
     # d_b.close_connection()
     #
-    # d = YTicker("MO")
-    # d.info()
+    d = YTicker("MO")
+    print(d.financial_info(2022))
     # print(f"평균 유효세율 {int_format(d.평균유효세율())}")
     # for y in range(2020, 2030):
     #     print(f"---------{y}---------")
