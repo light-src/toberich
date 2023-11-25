@@ -9,6 +9,8 @@ import dart_terms
 import pandas as pd
 import FinanceDataReader as fdr
 
+SOURCE = "dart"
+
 
 def to_float(value) -> float:
     try:
@@ -135,7 +137,7 @@ class DartTicker(ticker.Ticker):
         if self._cache.get(key) is not None:
             return self._cache.get(key)
 
-        value = self.db.select_data(self.ticker, year, type)
+        value = self.db.select_data(self.ticker, year, SOURCE, type)
         if value is None:
             tt = self.ticker.replace(".ks", "")
             df = self.dart.finstate_all(tt, year)
@@ -143,7 +145,7 @@ class DartTicker(ticker.Ticker):
             keys = raw['account_nm'].tolist()
             values = raw['thstrm_amount'].tolist()
             data = pd.DataFrame(values, index=keys)[0]
-            self.db.insert_data(self.ticker, year, type, data.to_json())
+            self.db.insert_data(self.ticker, year, type, SOURCE, data.to_json())
         else:
             data_dict = json.loads(value)
             data = pd.DataFrame(data_dict.values(), index=data_dict.keys())[0]

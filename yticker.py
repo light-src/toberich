@@ -8,6 +8,7 @@ import yterms
 import ticker
 from ticker import execute_fns, sum_of_keys, 국채수익률
 
+SOURCE = "yahoo"
 
 class YTicker(ticker.Ticker):
     def 국채수익률(self):
@@ -165,11 +166,11 @@ class YTicker(ticker.Ticker):
         if self._cache.get(key) is not None:
             return self._cache[key]
 
-        value = self.db.select_data(self.ticker, year, type)
+        value = self.db.select_data(self.ticker, year, SOURCE, type)
         if value is None:
             day = self.target_day(year)
             data = fn(pretty=True)[day]
-            self.db.insert_data(self.ticker, year, type, data.to_json())
+            self.db.insert_data(self.ticker, year, type, SOURCE, data.to_json())
         else:
             data_dict = json.loads(value[0][0])
             data = pandas.DataFrame(data_dict.values(), index=data_dict.keys())[0]

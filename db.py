@@ -31,9 +31,10 @@ class SQLiteDatabase:
                     ID INTEGER PRIMARY KEY AUTOINCREMENT,
                     CODE TEXT,
                     YEAR TEXT,
-                    TYPE TEXT, 
+                    TYPE TEXT,
+                    SOURCE TEXT, 
                     VALUE TEXT, 
-                    UNIQUE(CODE, YEAR, TYPE)
+                    UNIQUE(CODE, YEAR, TYPE, SOURCE)
                 )
             ''')
             print('테이블이 생성되었습니다.')
@@ -41,26 +42,27 @@ class SQLiteDatabase:
             # 연결을 커밋하고 연결 종료
             self.conn.commit()
 
-    def insert_data(self, code, year, type, value):
+    def insert_data(self, code, year, type, source, value):
         self.cursor.execute('''
-            INSERT INTO FINANCIALSTMT (CODE, YEAR, TYPE, VALUE) 
-            VALUES (?, ?, ?, ?)
-        ''', (code, year, type, value))
+            INSERT INTO FINANCIALSTMT (CODE, YEAR, TYPE, SOURCE, VALUE) 
+            VALUES (?, ?, ?, ?, ?)
+        ''', (code, year, type, source, value))
         self.conn.commit()
         print('데이터가 추가되었습니다.')
 
-    def insert_incomestmt(self, code, year,  value):
-        self.insert_data(code, year, INCOMESTMT, value)
+    def insert_incomestmt(self, code, year, source, value):
+        self.insert_data(code, year, INCOMESTMT, source, value)
 
-    def insert_balancesheet(self, code, year, value):
-        self.insert_data(code, year, BALANCESHEET, value)
+    def insert_balancesheet(self, code, year, source, value):
+        self.insert_data(code, year, BALANCESHEET, source, value)
 
-    def insert_cashflow(self, code, year, value):
-        self.insert_data(code, year, CASHFLOW, value)
+    def insert_cashflow(self, code, year, source, value):
+        self.insert_data(code, year, CASHFLOW, source, value)
 
-    def select_data(self, code, year, type):
+    def select_data(self, code, year, source, type):
         try:
-            self.cursor.execute(f"SELECT VALUE FROM FINANCIALSTMT WHERE CODE='{code}' and YEAR='{year}' and TYPE='{type}'")
+            self.cursor.execute(f"SELECT VALUE FROM FINANCIALSTMT WHERE CODE='{code}' and YEAR='{year}' "
+                                f"and TYPE='{type}' and SOURCE='{source}'")
             rows = self.cursor.fetchall()
         except sqlite3.OperationalError:
             rows = None
@@ -70,14 +72,14 @@ class SQLiteDatabase:
 
         return rows
 
-    def select_incomestmt(self, code, year):
-        return self.select_data(code, year, INCOMESTMT)
+    def select_incomestmt(self, code, year, source):
+        return self.select_data(code, year, source, INCOMESTMT)
 
-    def select_balancesheet(self, code, year):
-        return self.select_data(code, year, BALANCESHEET)
+    def select_balancesheet(self, code, year, source):
+        return self.select_data(code, year, source, BALANCESHEET)
 
-    def select_cashflow(self, code, year):
-        return self.select_data(code, year, CASHFLOW)
+    def select_cashflow(self, code, year, source):
+        return self.select_data(code, year, source, CASHFLOW)
 
     def select_all_data(self):
         self.cursor.execute('''
@@ -86,10 +88,10 @@ class SQLiteDatabase:
         rows = self.cursor.fetchall()
         return rows
 
-    def update_data(self, code, year, type, value):
+    def update_data(self, code, year, type, source, value):
         self.cursor.execute('''
-            UPDATE FINANCIALSTMT SET VALUE=? WHERE CODE=? and YEAR=? and TYPE=?
-        ''', (value, code, year, type))
+            UPDATE FINANCIALSTMT SET VALUE=? WHERE CODE=? and YEAR=? and TYPE=? and SOURCE=?
+        ''', (value, code, year, type, source))
         self.conn.commit()
 
     def delete_data(self, code, year):
@@ -107,20 +109,16 @@ if __name__ == "__main__":
     # 클래스 인스턴스 생성
     db = SQLiteDatabase()
     db.create_table_if_not_exists()
-    db.close_connection()
 
     tt = yticker.YTicker("MO")
 
-    # # 테이블 생성
-    # db.create_table_if_not_exists()
-    #
     # # 데이터 추가
     # ticker = tt.ticker
     # year = 2022
-    #
-    # db.insert_incomestmt(ticker, year, tt.손익계산서(year).to_json())
-    # db.insert_balancesheet(ticker, year, tt.재무상태표(year).to_json())
-    # db.insert_cashflow(ticker, year, tt.현금흐름표(year).to_json())
+    # #
+    # db.insert_incomestmt(ticker, year, yticker.SOURCE, tt.손익계산서(year).to_json())
+    # db.insert_balancesheet(ticker, year, yticker.SOURCE, tt.재무상태표(year).to_json())
+    # db.insert_cashflow(ticker, year, yticker.SOURCE, tt.현금흐름표(year).to_json())
 
     # 모든 데이터 조회
     all_data = db.select_all_data()
