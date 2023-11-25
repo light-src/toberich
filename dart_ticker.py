@@ -32,7 +32,7 @@ class DartTicker(ticker.Ticker):
         self.db = db.SQLiteDatabase()
         self._cache = {}
         self.ticker = tt
-        self.dart = OpenDartReader("38d76bb5143f100f8c8daeb4eb48ea8eee3ccf00")
+        self.dart = OpenDartReader(api_key)
 
     def __del__(self):
         self.db.close_connection()

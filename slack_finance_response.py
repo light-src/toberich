@@ -154,7 +154,11 @@ def send_slack_cashflow(ticker: str, year: int, channel: str):
 def usable_ticker(tt):
     candidates = [dart_ticker.DartTicker, yticker.YTicker]
     for candidate in candidates:
-        candidate_ticker = candidate(tt)
+        try:
+            candidate_ticker = candidate(tt)
+        except Exception:
+            continue
+
         if candidate_ticker.can_use():
             return candidate_ticker
 
