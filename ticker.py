@@ -356,7 +356,7 @@ class Ticker(ABC):
             "매출 총 이익": self.매출총이익,
             "판매비 와 관리비": self.판매비와관리비,
             "영업 이익": self.영업이익,
-            "영업 이익률": lambda year: self.영업이익(year) / self.매출액(year) if self.매출액(year) != 0 else -1
+            "영업 이익률": lambda year: self.영업이익(year) / self.매출액(year) if self.매출액(year) != 0 else -1,
             "지분법 손익": self.지분법손익,
             "금융 손익": self.금융손익,
             "기타 손익": self.기타손익,
