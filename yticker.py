@@ -14,7 +14,11 @@ class YTicker(ticker.Ticker):
     def 국채수익률(self):
         return 국채수익률("US10YT")
 
-    def can_use(self):
+    def can_use(self) -> bool:
+        try:
+            self.손익계산서(2022)
+        except Exception:
+            return False
         return True
 
     def __init__(self, tt):
