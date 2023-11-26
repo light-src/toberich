@@ -98,7 +98,7 @@ def list_dict_slack_content_to_blocks(title, elements):
         values = element.values()
         block.append({
             "type": "section",
-            "fields": [{"type": "mrkdwn", "text": value} for value in values]
+            "fields": [{"type": "mrkdwn", "text": str(value)} for value in values]
         })
 
     return [block[i:i + 40] for i in range(0, len(block), 40)]
