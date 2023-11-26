@@ -145,7 +145,7 @@ def slack_wics():
         return slack_util.slack_response("invalid input, test must have lc or mc or #code")
 
     thread = threading.Thread(
-        target=slack_wics_response.send_slack_response(text),
+        target=slack_wics_response.send_slack_response,
         args=[text, channel_id]
     )
     thread.start()
