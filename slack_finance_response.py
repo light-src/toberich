@@ -1,95 +1,5 @@
-import json
-
-from slack_sdk import WebClient
-from slack_sdk.errors import SlackApiError
-import dart_ticker
-import yticker
-import os
-
-from flask import jsonify
-
-
-def int_format(value):
-    if is_float(value):
-        value = float(value)
-    if isinstance(value, float):
-        return format(value, ",")
-    if value == "":
-        value = "-"
-    return str(value)
-
-
-def is_float(s):
-    try:
-        float(s)
-        return True
-    except ValueError:
-        return False
-    except TypeError:
-        return False
-
-
-def slack_response(text):
-    return jsonify({
-        "response_type": "in_channel",  # "in_channel" or "ephemeral"
-        "text": text,
-    })
-
-
-def send_slack(blocks, channel):
-    token = os.getenv("SLACK_API_TOKEN")
-    client = WebClient(token=token)
-    try:
-        client.chat_postMessage(
-            channel=channel,
-            blocks=[{
-                "type": "divider"
-            }]
-        )
-        for block in blocks:
-            req = json.dumps(block)
-            client.chat_postMessage(
-                channel=channel,
-                mkrdwn=True,
-                blocks=req)
-        client.chat_postMessage(
-            channel=channel,
-            blocks=[{
-                "type": "divider"
-            }]
-        )
-    except SlackApiError as e:
-        print(f"Error: {e}")
-
-
-def dict_slack_content_to_blocks(title, keys, values):
-    block = [
-        {
-            "type": "header",
-            "text": {
-                "type": "plain_text",
-                "text": title,
-                "emoji": True
-            }
-        },
-    ]
-
-    for key in keys:
-        block.append({
-            "type": "section",
-            "fields": [
-                {
-                    "type": "mrkdwn",
-                    "text": f"*{key}*"
-                },
-                {
-                    "type": "mrkdwn",
-                    "text": int_format(values[key])
-                }
-            ]
-        })
-
-    return [block[i:i + 40] for i in range(0, len(block), 40)]
+from slack_util import send_slack, dict_slack_content_to_blocks
+from ticker_util import usable_ticker
 
 
 def send_slack_info(ticker, channel):
@@ -149,20 +59,6 @@ def send_slack_cashflow(ticker: str, year: int, channel: str):
         ),
         channel
     )
-
-
-def usable_ticker(tt):
-    candidates = [dart_ticker.DartTicker, yticker.YTicker]
-    for candidate in candidates:
-        try:
-            candidate_ticker = candidate(tt)
-        except Exception:
-            continue
-
-        if candidate_ticker.can_use():
-            return candidate_ticker
-
-    raise Exception("cannot find usable ticker type")
 
 
 if __name__ == "__main__":

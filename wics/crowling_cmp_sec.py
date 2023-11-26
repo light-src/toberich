@@ -1,10 +1,10 @@
 # https://purplechip.tistory.com/31
 import time
 
-from wics import qconfig
+import const
 import requests
 from pandas import DataFrame
-from slack_finance_response import usable_ticker
+from ticker_util import usable_ticker
 import threading
 
 companies = []
@@ -27,7 +27,7 @@ def print_company(company: dict):
 
 
 def print_code(code):
-    response = requests.get(qconfig.wics_url(date, code))
+    response = requests.get(const.wics_url(date, code))
 
     if response.status_code == 200:  # request success
         json_list = response.json()  # dictionary
@@ -54,8 +54,8 @@ if __name__ == '__main__':
     # there is no data in the stock market closed day and before market open.
     # weekends, Jan 1, Dec 31 etc
 
-    # for wics_code in qconfig.wics_mc.keys():
-    print_code(1010)
+    for wics_code in const.wics_mc.keys():
+        print_code(10)
 
     # print(f"--------------------------------------------------------------")
     # print(f"--------------------------------------------------------------")
