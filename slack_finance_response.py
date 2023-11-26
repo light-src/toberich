@@ -1,6 +1,5 @@
 from slack_util import send_slack, dict_slack_content_to_blocks
-import dart_ticker
-import yticker
+from ticker_util import usable_ticker
 
 
 def send_slack_info(ticker, channel):
@@ -60,20 +59,6 @@ def send_slack_cashflow(ticker: str, year: int, channel: str):
         ),
         channel
     )
-
-
-def usable_ticker(tt):
-    candidates = [dart_ticker.DartTicker, yticker.YTicker]
-    for candidate in candidates:
-        try:
-            candidate_ticker = candidate(tt)
-        except Exception:
-            continue
-
-        if candidate_ticker.can_use():
-            return candidate_ticker
-
-    raise Exception("cannot find usable ticker type")
 
 
 if __name__ == "__main__":

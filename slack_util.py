@@ -32,8 +32,8 @@ def slack_response(text):
 
 
 def send_slack(blocks, channel):
-    # token = os.getenv("SLACK_API_TOKEN")
-    client = WebClient(token="xoxb-6138851509925-6144805408082-4GMvuvVTjdjyj3FopztziXJl")
+    token = os.getenv("SLACK_API_TOKEN")
+    client = WebClient(token=token)
     try:
         client.chat_postMessage(
             channel=channel,

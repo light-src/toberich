@@ -4,7 +4,7 @@ import time
 import const
 import requests
 from pandas import DataFrame
-from slack_finance_response import usable_ticker
+from ticker_util import usable_ticker
 import threading
 
 companies = []

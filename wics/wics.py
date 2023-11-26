@@ -1,6 +1,7 @@
 from wics import const
 import requests
 from datetime import datetime, timedelta
+from ticker_util import usable_ticker
 
 
 class Wics:
@@ -22,7 +23,11 @@ class Wics:
                 # ms = e['IDX_NM_KOR'][5:]  # Medium sector
                 code = e['CMP_CD']  # Company code
                 name = e['CMP_KOR']  # Company korean name
-                result.append({'company': name, 'code': code})
+                try:
+                    할인율 = usable_ticker(f'{code}.ks').예상할인율()
+                except Exception as e:
+                    할인율 = f"Cannot Calculate"
+                result.append({'company': name, 'code': code, '할인율': 할인율})
         else:
             raise f"get company error: {response.status_code}"
 
@@ -51,6 +56,6 @@ class Wics:
 
 if __name__ == '__main__':
     wics = Wics()
-    print(wics.get_mc())
-    print(wics.get_lc())
-    print(wics.get_companies("10"))
+    # print(wics.get_mc())
+    # print(wics.get_lc())
+    usable_ticker(f'046120.ks').예상할인율()
