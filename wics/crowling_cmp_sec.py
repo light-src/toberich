@@ -49,18 +49,22 @@ def print_code(code):
 
 
 if __name__ == '__main__':
-    df = DataFrame(columns=['code', 'name', 'ls', 'ms'])
-    date = '20231113'
-    # there is no data in the stock market closed day and before market open.
-    # weekends, Jan 1, Dec 31 etc
+    # df = DataFrame(columns=['code', 'name', 'ls', 'ms'])
+    # date = '20231113'
+    # # there is no data in the stock market closed day and before market open.
+    # # weekends, Jan 1, Dec 31 etc
+    #
+    # for wics_code in const.wics_mc.keys():
+    #     print_code(10)
+    #
+    # # print(f"--------------------------------------------------------------")
+    # # print(f"--------------------------------------------------------------")
+    # # print(f"sector: {wics_code}, median: {statistics.median(예상할인율_list)}")
+    # # average = sum(예상할인율_list) / len(예상할인율_list)
+    # # print(f"sector: {wics_code}, average: {average}")
+    # # print(f"--------------------------------------------------------------")
+    # # print(f"--------------------------------------------------------------")
 
-    for wics_code in const.wics_mc.keys():
-        print_code(10)
-
-    # print(f"--------------------------------------------------------------")
-    # print(f"--------------------------------------------------------------")
-    # print(f"sector: {wics_code}, median: {statistics.median(예상할인율_list)}")
-    # average = sum(예상할인율_list) / len(예상할인율_list)
-    # print(f"sector: {wics_code}, average: {average}")
-    # print(f"--------------------------------------------------------------")
-    # print(f"--------------------------------------------------------------")
+    import json
+    response = requests.get(const.wics_url("20231115", 10))
+    print(json.dumps(response.json()))

@@ -147,7 +147,7 @@ class DartTicker(ticker.Ticker):
             data = pd.DataFrame(values, index=keys)[0]
             self.db.insert_data(self.ticker, year, type, SOURCE, data.to_json())
         else:
-            data_dict = json.loads(value)
+            data_dict = json.loads(value[0][0])
             data = pd.DataFrame(data_dict.values(), index=data_dict.keys())[0]
 
         self._cache[key] = data
