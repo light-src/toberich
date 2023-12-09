@@ -20,6 +20,16 @@ def to_float(value) -> float:
 
 
 class DartTicker(ticker.Ticker):
+    def account(self, account):
+        accounts = []
+        fns = [self._손익계산서, self._현금흐름표, self._재무상태표]
+        for fn in fns:
+            try:
+                accounts = [fn(account, year) for year in list(range(self.first_year(), self.this_year))]
+            except Exception:
+                continue
+        return accounts
+
     def 국채수익률(self):
         return 3.960/100
 
@@ -155,9 +165,10 @@ class DartTicker(ticker.Ticker):
 
 
 if __name__ == "__main__":
-    pass
+    # pass
     # from slack_finance_response import int_format
-    # d = DartTicker("035420")
+    d = DartTicker("035420")
+    print(d.info())
     # d.info()
     # print(f"평균 유효세율 {int_format(d.평균유효세율())}")
     # for y in range(2020, 2030):

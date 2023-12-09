@@ -54,6 +54,10 @@ class Ticker(ABC):
         self._dividend_yield = None
 
     @abstractmethod
+    def account(self, account):
+        pass
+
+    @abstractmethod
     def can_use(self):
         pass
 
@@ -307,7 +311,7 @@ class Ticker(ABC):
                 year > self.this_year + self.non_growth_threshold):
             return self.non_growth_dividend_yield
         if year < self.this_year:
-            return self._주주환원(year) / self.당기순이익(year)
+            return self.주주환원(year) / self.당기순이익(year)
         return self.평균주주환원율()
 
     def 평균주주환원율(self):

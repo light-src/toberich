@@ -4,6 +4,7 @@ from slack_sdk.errors import SlackApiError
 import os
 from flask import jsonify
 
+
 def int_format(value):
     if is_float(value):
         value = float(value)
@@ -52,6 +53,19 @@ def send_slack(blocks, channel):
             blocks=[{
                 "type": "divider"
             }]
+        )
+    except SlackApiError as e:
+        print(f"Error: {e}")
+
+
+def send_image(title, filepath, channel):
+    token = os.getenv("SLACK_API_TOKEN")
+    client = WebClient(token=token)
+    try:
+        client.files_upload_v2(
+            channel=channel,
+            file=filepath,
+            title=title,
         )
     except SlackApiError as e:
         print(f"Error: {e}")
