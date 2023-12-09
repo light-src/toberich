@@ -5,12 +5,6 @@ from ticker_util import usable_ticker
 from chart import Chart
 
 
-def send_mono_response(ticker, expressions, channel):
-    chart = get_chart(ticker, expressions)
-    path = chart.save_image(f"{ticker}_{expressions}")
-    send_image(ticker, path, channel)
-
-
 def get_chart(ticker, expressions) -> Chart:
     tt = usable_ticker(ticker)
     chart = Chart(ticker)
