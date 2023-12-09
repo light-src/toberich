@@ -6,13 +6,14 @@ from chart import Chart
 
 color = ['b', 'g', 'r', 'c', 'm', 'y']
 
+
 def get_chart(ticker, expressions) -> Chart:
     tt = usable_ticker(ticker)
     chart = Chart(ticker)
     chart.set_x(list(range(tt.first_year(), tt.this_year)))
     for i in range(len(expressions)):
         calculated = calculate_expression(tt, expressions[i])
-        chart.add_elements(calculated, 'r', expressions[i])
+        chart.add_elements(calculated, color[i], expressions[i])
     return chart
 
 
