@@ -4,14 +4,15 @@ from slack_util import send_image
 from ticker_util import usable_ticker
 from chart import Chart
 
+color = ['b', 'g', 'r', 'c', 'm', 'y']
 
 def get_chart(ticker, expressions) -> Chart:
     tt = usable_ticker(ticker)
     chart = Chart(ticker)
     chart.set_x(list(range(tt.first_year(), tt.this_year)))
-    for expression in expressions:
-        calculated = calculate_expression(tt, expression)
-        chart.add_elements(calculated, 'r', expression)
+    for i in range(len(expressions)):
+        calculated = calculate_expression(tt, expressions[i])
+        chart.add_elements(calculated, 'r', expressions[i])
     return chart
 
 
@@ -44,6 +45,14 @@ def send_slack_response(req_txt, channel):
     exps = txts[1].split(",")
     path = get_chart(ticker, exps).save_image(req_txt)
     send_image(ticker, path, channel)
+
+
+def validate_expressions(txt):
+    txts = txt.split(" ", maxsplit=1)
+    exps = txts[1].split(",")
+    if len(exps) > 6:
+        return False
+    return True
 
 
 if __name__ == '__main__':

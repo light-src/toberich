@@ -160,7 +160,10 @@ def slack_graph():
     channel_id = data.get('channel_id')
 
     if not isinstance(text, str):
-        return slack_util.slack_response("invalid input")
+        return slack_util.slack_response(f"invalid input : {text}")
+
+    if not slack_chart_response.validate_expressions(text):
+        return slack_util.slack_response(f"invalid input. max expression - 6 : {text}")
 
     thread = threading.Thread(
         target=slack_chart_response.send_slack_response,
