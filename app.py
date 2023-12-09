@@ -1,6 +1,7 @@
 import slack_finance_response
 import slack_gpt_response
 import slack_wics_response
+import slack_chart_response
 import slack_util
 
 import threading
@@ -146,6 +147,23 @@ def slack_wics():
 
     thread = threading.Thread(
         target=slack_wics_response.send_slack_response,
+        args=[text, channel_id]
+    )
+    thread.start()
+    return slack_util.slack_response(f"request received")
+
+
+@app.post('/slack/graph')
+def slack_graph():
+    data = request.form
+    text = data.get('text')
+    channel_id = data.get('channel_id')
+
+    if not isinstance(text, str):
+        return slack_util.slack_response("invalid input")
+
+    thread = threading.Thread(
+        target=slack_chart_response.send_slack_response,
         args=[text, channel_id]
     )
     thread.start()

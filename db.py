@@ -67,7 +67,7 @@ class SQLiteDatabase:
         except sqlite3.OperationalError:
             rows = None
 
-        if rows is None or len(rows) == 0:
+        if not rows:
             rows = None
 
         return rows
